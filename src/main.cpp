@@ -1,5 +1,3 @@
-#include "fmt/core.h"
-#include <cstdio>
 #include <std.hpp>
 
 #include <fmt.hpp>
@@ -20,6 +18,7 @@ int main(int, char**)
     fmt::print(fmt::format(FMT_STRING("There are {:d} lines in the input file {:s}\n"), obj_lines.size(), filename));
 
     auto match_line_regex = [&](auto const& l) {
+      // ^(0{5,}[[:xdigit:]]*) <(.*)>:$
       const static auto function_re = regex{ "^(0{5,}[[:xdigit:]]*) <(.*)>:$", regex_constants::optimize };
       if (smatch matches; regex_search(l, matches, function_re))
       {
