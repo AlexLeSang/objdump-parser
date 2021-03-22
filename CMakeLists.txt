@@ -22,8 +22,8 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   set(COMPILATION_COMMANDS
     -fcoroutines
     -fconcepts
-    # -O0
-    -O3
+    -O0
+    # -O3
     -g
     -Wall
     # -Weffc++
@@ -82,22 +82,21 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     # -Wsign-conversion
     -Wfloat-conversion
     -Wpedantic
-    -march=native
-    -flto
-    -ftree-vectorize
-    -msse4
-    -mfpmath=sse
+    # -march=native
+    # -flto
+    # -ftree-vectorize
+    # -msse4
+    # -mfpmath=sse
     )
 endif()
 
 add_executable(objdump-parser
   # ${CMAKE_SOURCE_DIR}/src/input.cpp
   # ${CMAKE_SOURCE_DIR}/src/create_log_tree.cpp
-  ${CMAKE_SOURCE_DIR}/main.cpp)
+  ${CMAKE_SOURCE_DIR}/src/main.cpp)
 
 target_include_directories(objdump-parser PRIVATE
-  inc
-  ${CMAKE_SOURCE_DIR}/external/semimap)
+  inc)
 
 target_compile_options(objdump-parser PRIVATE ${COMPILATION_COMMANDS})
 set_target_properties(objdump-parser PROPERTIES ${TARGET_PROPERTIES})
@@ -105,7 +104,8 @@ target_link_libraries(objdump-parser ${CONAN_LIBS})
 target_precompile_headers(objdump-parser PUBLIC
   inc/std.hpp
   inc/boost.hpp
-  inc/ranges.hpp)
+  inc/ranges.hpp
+  inc/fmt.hpp)
 
 add_executable(objdump-parser_tests
   tests/test_main.cpp
@@ -120,6 +120,11 @@ add_executable(objdump-parser_tests
   # ${CMAKE_SOURCE_DIR}/tests/test_split_log_string.cpp
   # ${CMAKE_SOURCE_DIR}/tests/test_trace_tags.cpp
   )
+
+add_custom_target(create_objdump
+  # COMMAND "objdump -S -s -l -d --demangle build/bin/objdump-parser > build/objdump-parser.objdump")
+  COMMAND objdump -S -s -l -d --demangle ${CMAKE_BINARY_DIR}/bin/objdump-parser > ${CMAKE_BINARY_DIR}/objdump-parser.objdump
+  BYPRODUCTS ${CMAKE_BINARY_DIR}/objdump-parser.objdump)
 
 
 target_precompile_headers(objdump-parser_tests REUSE_FROM objdump-parser)
